@@ -31,8 +31,6 @@ set -ex
 go version
 date
 
-cd "${1:-github/golang-samples}"
-
 export GO111MODULE=on # Always use modules.
 export GOPROXY=https://proxy.golang.org
 TIMEOUT=60m
@@ -93,19 +91,8 @@ go install ./testing/sampletests
 # Set application credentials before using gimmeproj so it has access.
 # This is changed to a project-specific credential after a project is leased.
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/71386_kokoro-golang-samples-tests
-gimmeproj version;
-GOLANG_SAMPLES_PROJECT_ID=$(gimmeproj -project golang-samples-tests lease $TIMEOUT);
-export GOLANG_SAMPLES_PROJECT_ID
-if [ -z "$GOLANG_SAMPLES_PROJECT_ID" ]; then
-  echo "Lease failed."
-  exit 1
-fi
+GOLANG_SAMPLES_PROJECT_ID=shinfan-test
 echo "Running tests in project $GOLANG_SAMPLES_PROJECT_ID";
-
-# Always return the project and clean the cache so Kokoro doesn't try to copy
-# it when exiting.
-# shellcheck disable=SC2064
-trap "go clean -modcache; gimmeproj -project golang-samples-tests done $GOLANG_SAMPLES_PROJECT_ID" EXIT
 
 set +x
 
@@ -145,22 +132,11 @@ set +e # Don't exit on errors to make sure we run all tests.
 # runTests runs the tests in the current directory. If an argument is specified,
 # it is used as the argument to `go test`.
 runTests() {
-  if goVersionShouldSkip; then
-    set +x
-    echo "SKIPPING: module's minimum version is newer than the current Go version."
-    set -x
-    return 0
-  fi
-
   set +x
   echo "Running 'go test' in '$(pwd)'..."
   set -x
-  2>&1 go test -timeout $TIMEOUT -v "${1:-./...}" | tee sponge_log.log
-  /go/bin/go-junit-report -set-exit-code < sponge_log.log > raw_log.xml
+  2>&1 go test -timeout $TIMEOUT -v "${1:-./...}"
   exit_code=$((exit_code + $?))
-  # Add region tags tested to test case properties.
-  sampletests < raw_log.xml > sponge_log.xml
-  rm raw_log.xml # No need to keep this around.
   set +x
 }
 
@@ -210,13 +186,6 @@ else
       fi
     fi
   done
-fi
-
-# If we're running system tests, send the test log to the Build Cop Bot.
-# See https://github.com/googleapis/repo-automation-bots/tree/master/packages/buildcop.
-if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"system-tests"* ]]; then
-  chmod +x "$KOKORO_GFILE_DIR"/linux_amd64/buildcop
-  "$KOKORO_GFILE_DIR"/linux_amd64/buildcop
 fi
 
 exit $exit_code
