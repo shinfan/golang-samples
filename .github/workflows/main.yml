@@ -38,4 +38,5 @@ jobs:
         GOOGLE_API_USE_MTLS: 1
         GOLANG_SAMPLES_E2E_TEST: 1
         TESTING_DIR: pubsub
+        RUN_ALL_TESTS: 0
       run: ./testing/dca/system_tests.sh

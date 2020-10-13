@@ -35,10 +35,6 @@ export GO111MODULE=on # Always use modules.
 export GOPROXY=https://proxy.golang.org
 TIMEOUT=60m
 
-# Override to determine if all go tests should be run.
-# Does not include static analysis checks.
-RUN_ALL_TESTS="1"
-
 # Don't print environment variables in case there are secrets.
 # If you need a secret, use a keystore_resource in common.cfg.
 set +x
@@ -103,9 +99,6 @@ if [[ $RUN_ALL_TESTS = "1" ]]; then
       runTests
     popd > /dev/null;
   done
-elif [[ -z "${TESTING_DIR// }" ]]; then
-  echo "Only running root tests"
-  runTests .
 else
   runTests . # Always run root tests.
   echo "Running tests in the following directory: $TESTING_DIR"
