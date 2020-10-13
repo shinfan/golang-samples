@@ -84,6 +84,7 @@ export GOLANG_SAMPLES_BIGTABLE_INSTANCE=testing-instance
 
 export GOLANG_SAMPLES_FIRESTORE_PROJECT=golang-samples-fire-0
 export GOOGLE_API_USE_CLIENT_CERTIFICATE=true
+export GOLANG_SAMPLES_PROJECT_ID=dca-test-1
 
 set -x
 
@@ -107,9 +108,11 @@ fi
 
 date
 
+echo "$GOOGLE_APPLICATION_CREDENTIALS"
 echo "$CLIENT_CERTIFICATE"
 
 echo "Setting up client cert"
+mkdir -p ~/.secureConnect/
 cp ./testing/kokoro/context_aware_metadata.json ~/.secureConnect/context_aware_metadata.json
 
 # exit_code collects all of the exit codes of the tests, and is used to set the
