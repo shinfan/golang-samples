@@ -84,7 +84,9 @@ export GOLANG_SAMPLES_BIGTABLE_INSTANCE=testing-instance
 
 export GOLANG_SAMPLES_FIRESTORE_PROJECT=golang-samples-fire-0
 export GOOGLE_API_USE_CLIENT_CERTIFICATE=true
-export GOLANG_SAMPLES_PROJECT_ID=dca-test-1
+
+echo $CREDENTIALS > ~/secret.json
+export GOOGLE_APPLICATION_CREDENTIALS=~/secret.json
 
 set -x
 

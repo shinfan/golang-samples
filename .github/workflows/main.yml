@@ -23,4 +23,8 @@ jobs:
       - run: go version
       # Runs a single command using the runners shell
       - name: Run test
+        env:
+          GOLANG_SAMPLES_PROJECT_ID: ${{ secrets.GOLANG_SAMPLES_PROJECT_ID }}
+          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+          CREDENTIALS: ${{ secrets.CREDENTIALS }}
         run: ./testing/kokoro/system_tests.sh
