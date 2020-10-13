@@ -29,4 +29,4 @@ jobs:
           CREDENTIALS: ${{ secrets.CREDENTIALS }}
           GOOGLE_API_USE_MTLS: 1
           GOLANG_SAMPLES_E2E_TEST: 1
-        run: ./testing/kokoro/system_tests.sh
+        run: ./testing/dca/system_tests.sh

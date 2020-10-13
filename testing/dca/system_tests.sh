@@ -62,8 +62,6 @@ export GOOGLE_APPLICATION_CREDENTIALS=~/secret.json
 
 set -x
 
-go install ./testing/sampletests
-
 pwd
 
 mkdir -p ~/.secureConnect/
