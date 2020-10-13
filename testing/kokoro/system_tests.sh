@@ -83,27 +83,14 @@ export GOLANG_SAMPLES_BIGTABLE_PROJECT=golang-samples-tests
 export GOLANG_SAMPLES_BIGTABLE_INSTANCE=testing-instance
 
 export GOLANG_SAMPLES_FIRESTORE_PROJECT=golang-samples-fire-0
+export GOOGLE_API_USE_CLIENT_CERTIFICATE=true
 
 set -x
 
 go install ./testing/sampletests
 
-# Set application credentials before using gimmeproj so it has access.
-# This is changed to a project-specific credential after a project is leased.
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/71386_kokoro-golang-samples-tests
-GOLANG_SAMPLES_PROJECT_ID=shinfan-test
-echo "Running tests in project $GOLANG_SAMPLES_PROJECT_ID";
-
-set +x
-
-# Set application credentials to the project-specific account. Some APIs do not
-# allow the service account project and GOOGLE_CLOUD_PROJECT to be different.
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/71386_kokoro-$GOLANG_SAMPLES_PROJECT_ID
-export GOLANG_SAMPLES_SERVICE_ACCOUNT_EMAIL=kokoro-$GOLANG_SAMPLES_PROJECT_ID@$GOLANG_SAMPLES_PROJECT_ID.iam.gserviceaccount.com
-
-set -x
-
 pwd
+
 date
 
 if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"system-tests"* && -n $GOLANG_SAMPLES_GO_VET ]]; then
@@ -116,13 +103,14 @@ if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"system-tests"* ]]; then
   ./testing/kokoro/configure_gcloud.bash;
 fi
 
-# only set with mtls_smoketest
-# TODO(cbro): remove with mtls_smoketest.cfg
-if [[ $GOOGLE_API_USE_MTLS = "always" ]]; then
-  ./testing/kokoro/mtls_smoketest.bash
-fi
+./testing/kokoro/mtls_smoketest.bash
 
 date
+
+echo "$CLIENT_CERTIFICATE"
+
+echo "Setting up client cert"
+cp ./testing/kokoro/context_aware_metadata.json ~/.secureConnect/context_aware_metadata.json
 
 # exit_code collects all of the exit codes of the tests, and is used to set the
 # exit code at the end of the script.
