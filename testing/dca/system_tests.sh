@@ -103,13 +103,13 @@ if [[ $RUN_ALL_TESTS = "1" ]]; then
       runTests
     popd > /dev/null;
   done
-elif [[ -z "${CHANGED_DIRS// }" ]]; then
+elif [[ -z "${TESTING_DIR// }" ]]; then
   echo "Only running root tests"
   runTests .
 else
   runTests . # Always run root tests.
-  echo "Running tests in modified directories: $CHANGED_DIRS"
-  for d in $CHANGED_DIRS; do
+  echo "Running tests in the following directory: $TESTING_DIR"
+  for d in $TESTING_DIR; do
     mods=$(find "$d" -name go.mod)
     # If there are no modules, just run the tests directly.
     if [[ -z "$mods" ]]; then

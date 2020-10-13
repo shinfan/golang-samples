@@ -12,21 +12,30 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: '^1.13.1' # The Go version to download (if necessary) and use.
-      - run: go version
-      # Runs a single command using the runners shell
-      - name: Run test
-        env:
-          GOLANG_SAMPLES_PROJECT_ID: ${{ secrets.GOLANG_SAMPLES_PROJECT_ID }}
-          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
-          CREDENTIALS: ${{ secrets.CREDENTIALS }}
-          GOOGLE_API_USE_MTLS: 1
-          GOLANG_SAMPLES_E2E_TEST: 1
-        run: ./testing/dca/system_tests.sh
+          go-version: '^1.13.1'
+  pubsub:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    # Runs a single command using the runners shell
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.13.1'
+    - name: Run test for Cloud Pubsub
+      env:
+        GOLANG_SAMPLES_PROJECT_ID: ${{ secrets.GOLANG_SAMPLES_PROJECT_ID }}
+        CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+        CREDENTIALS: ${{ secrets.CREDENTIALS }}
+        GOOGLE_API_USE_MTLS: 1
+        GOLANG_SAMPLES_E2E_TEST: 1
+        TESTING_DIR: pubsub
+      run: ./testing/dca/system_tests.sh
