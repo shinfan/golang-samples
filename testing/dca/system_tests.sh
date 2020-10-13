@@ -100,7 +100,6 @@ if [[ $RUN_ALL_TESTS = "1" ]]; then
     popd > /dev/null;
   done
 else
-  runTests . # Always run root tests.
   echo "Running tests in the following directory: $TESTING_DIR"
   for d in $TESTING_DIR; do
     mods=$(find "$d" -name go.mod)
